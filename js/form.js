@@ -66,20 +66,46 @@ class Form{
             this.submit.hide();
             this.income_amount.hide();
             this.income_details.hide();
+            
             if(this.status == "expense"){
-                updateExpense();
+                this.updateExpense();
             }
             if(this.status == "income"){
-                updateIncome();
+                this.updateIncome();
             }
+           
             this.status = "none";
         })
     }
     updateExpense(){
-        var expenseRef = database.ref('expense');
-        database.ref(expenseRef).update({
-            expensedetails:this.expense_details.value(),
-            expenseamount:this.expense_amount.value()
+        if(transaction!=undefined){
+            transaction+=1;
+            var expenseRef = database.ref('expense/entry'+transaction);
+            database.ref(expenseRef).set({
+                expensedate:new Date(),
+                expensedetails:this.expense_details.value(),
+                expenseamount:this.expense_amount.value()
+            })
+            this.updatetransaction();
+        }
+        
+    }
+    updateIncome(){
+        if(transaction!=undefined){
+            transaction+=1
+            var incomeRef = database.ref('income/entry'+transaction);
+            database.ref(incomeRef).set({
+                incomedate:new Date(),
+                incomedetails:this.income_details.value(),
+                incomeamount:this.income_amount.value()
+            })
+            this.updatetransaction();
+        }
+        
+    }
+    updatetransaction(){
+        database.ref('/').update({
+            transaction:transaction
         })
     }
 }
